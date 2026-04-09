@@ -3,8 +3,24 @@ import Database from 'better-sqlite3';
 import * as schema from './schema';
 import path from 'path';
 
-// For local development using the SQLite file created by wrangler
-const localDbPath = path.resolve(process.cwd(), '.wrangler/state/v3/d1/miniflare-D1DatabaseObject/e833abeb83abd38e60de8166ab13bbd4d7a5636dc148a7fd8ec47b7678c87854.sqlite');
+import fs from 'fs';
+
+function getLocalDbPath() {
+  const baseDir = path.resolve(process.cwd(), '.wrangler/state/v3/d1/miniflare-D1DatabaseObject');
+  if (!fs.existsSync(baseDir)) return null;
+  
+  const files = fs.readdirSync(baseDir);
+  // Sort by mtime descending and exclude metadata.sqlite
+  const dbFiles = files
+    .filter(f => f.endsWith('.sqlite') && !f.includes('metadata.sqlite'))
+    .map(f => {
+      const fullPath = path.join(baseDir, f);
+      return { name: fullPath, time: fs.statSync(fullPath).mtime.getTime() };
+    })
+    .sort((a, b) => b.time - a.time);
+    
+  return dbFiles.length > 0 ? dbFiles[0].name : null;
+}
 
 let db: any;
 
@@ -12,7 +28,10 @@ export function getDb() {
   if (db) return db;
 
   if (process.env.NODE_ENV === 'development') {
-    const sqlite = new Database(localDbPath);
+    const dbPath = getLocalDbPath();
+    console.log('Using local DB path:', dbPath);
+    if (!dbPath) throw new Error('No local D1 database found. Run migrations.');
+    const sqlite = new Database(dbPath);
     db = drizzle(sqlite, { schema });
   } else {
     // TODO: Implement D1 HTTP API over fetch for Vercel production

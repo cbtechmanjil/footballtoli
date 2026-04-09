@@ -1,1 +1,0 @@
-ALTER TABLE `fines` ADD `evidence_url` text;
