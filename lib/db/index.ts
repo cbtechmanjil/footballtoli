@@ -34,10 +34,15 @@ export function getDb() {
     const sqlite = new Database(dbPath);
     db = drizzle(sqlite, { schema });
   } else {
-    // TODO: Implement D1 HTTP API over fetch for Vercel production
-    // For now, this is a placeholder. In a real scenario, we'd use 
-    // the Cloudflare D1 HTTP API via fetch.
-    throw new Error('Production D1 connection not yet implemented. Requires Cloudflare API tokens.');
+    // Production (Vercel) uses D1 HTTP Bridge
+    const { D1HttpDatabase } = require('./d1-http');
+    const { drizzle: d1Drizzle } = require('drizzle-orm/d1');
+    const d1 = new D1HttpDatabase(
+      process.env.CLOUDFLARE_ACCOUNT_ID!,
+      process.env.CLOUDFLARE_DATABASE_ID!,
+      process.env.CLOUDFLARE_D1_TOKEN!
+    );
+    db = d1Drizzle(d1, { schema });
   }
   return db;
 }
