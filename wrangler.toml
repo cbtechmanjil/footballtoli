@@ -4,5 +4,5 @@ compatibility_date = "2024-04-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "football-toli-db"
-database_id = "local-db"
+database_id = "42d95466-b02f-41d0-989a-9a782f9266f7"
 migrations_dir = "drizzle"
