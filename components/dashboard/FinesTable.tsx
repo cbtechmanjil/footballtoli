@@ -69,7 +69,22 @@ export default function FinesList({ players, fines, isAdmin, onToggleStatus, onD
                     {fine.remarks && <div className="text-xs text-gray-400 italic">"{fine.remarks}"</div>}
                   </td>
                   <td className="px-6 py-4">
-                    <div className="font-bold text-gray-900">{formatNPR(fine.amount)}</div>
+                    <div className="font-bold text-gray-900 flex items-center">
+                      {formatNPR(fine.amount)}
+                      {fine.evidenceUrl && (
+                        <a 
+                          href={fine.evidenceUrl} 
+                          target="_blank" 
+                          rel="noreferrer"
+                          className="ml-2 text-fpl-purple hover:text-fpl-pink transition-colors"
+                          title="View Proof"
+                        >
+                          <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                          </svg>
+                        </a>
+                      )}
+                    </div>
                   </td>
                   <td className="px-6 py-4 text-center">
                     <button

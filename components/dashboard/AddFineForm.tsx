@@ -33,6 +33,28 @@ export default function AddFineForm({ players, gameweekId, onSuccess, password }
 
   const onSubmit = async (data: FormData) => {
     try {
+      let evidenceUrl = '';
+      const fileInput = document.getElementById('evidence') as HTMLInputElement;
+      const file = fileInput?.files?.[0];
+
+      if (file) {
+        // 1. Get pre-signed URL
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          body: JSON.stringify({ fileName: file.name, contentType: file.type }),
+        });
+        const { url, publicUrl, key } = await res.json();
+
+        // 2. Upload to R2
+        await fetch(url, {
+          method: 'PUT',
+          body: file,
+          headers: { 'Content-Type': file.type },
+        });
+
+        evidenceUrl = publicUrl || key; // Fallback to key if no public domain
+      }
+
       const res = await fetch('/api/actions', {
         method: 'POST',
         headers: { 
@@ -44,13 +66,15 @@ export default function AddFineForm({ players, gameweekId, onSuccess, password }
           data: { 
             ...data, 
             playerId: parseInt(data.playerId),
-            gameweekId 
+            gameweekId,
+            evidenceUrl
           } 
         }),
       });
 
       if (!res.ok) throw new Error('Failed to add fine');
       reset();
+      if (fileInput) fileInput.value = '';
       onSuccess();
     } catch (err) {
       alert('Error adding fine. Check password or permissions.');
@@ -90,15 +114,27 @@ export default function AddFineForm({ players, gameweekId, onSuccess, password }
         </div>
       </div>
 
-      <div>
-        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1 block">Reason</label>
-        <input 
-          type="text"
-          {...register('reason')}
-          placeholder="e.g. Missing Team Sheet"
-          className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-fpl-purple/20 outline-none"
-        />
-        {errors.reason && <p className="text-[10px] text-fpl-pink font-bold mt-1">{errors.reason.message}</p>}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1 block">Reason</label>
+          <input 
+            type="text"
+            {...register('reason')}
+            placeholder="e.g. Missing Team Sheet"
+            className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-fpl-purple/20 outline-none"
+          />
+          {errors.reason && <p className="text-[10px] text-fpl-pink font-bold mt-1">{errors.reason.message}</p>}
+        </div>
+
+        <div>
+          <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1 block">Proof / Screenshot</label>
+          <input 
+            id="evidence"
+            type="file"
+            accept="image/*"
+            className="w-full bg-white border border-gray-200 rounded-xl px-3 py-1.5 text-xs focus:ring-2 focus:ring-fpl-purple/20 outline-none file:mr-4 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-[10px] file:font-black file:bg-fpl-purple/10 file:text-fpl-purple hover:file:bg-fpl-purple/20"
+          />
+        </div>
       </div>
 
       <div>

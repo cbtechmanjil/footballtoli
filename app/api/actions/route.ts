@@ -28,6 +28,7 @@ export async function POST(request: Request) {
           reason: data.reason,
           status: 'unpaid',
           remarks: data.remarks,
+          evidenceUrl: data.evidenceUrl,
         }).returning().get();
         return NextResponse.json(newFine);
 

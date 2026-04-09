@@ -22,6 +22,7 @@ export const fines = sqliteTable('fines', {
   reason: text('reason').notNull(),
   status: text('status', { enum: ['unpaid', 'paid'] }).default('unpaid').notNull(),
   remarks: text('remarks'),
+  evidenceUrl: text('evidence_url'),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
 
