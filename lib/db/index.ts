@@ -1,26 +1,5 @@
-import { drizzle } from 'drizzle-orm/better-sqlite3';
-import Database from 'better-sqlite3';
+import 'server-only';
 import * as schema from './schema';
-import path from 'path';
-
-import fs from 'fs';
-
-function getLocalDbPath() {
-  const baseDir = path.resolve(process.cwd(), '.wrangler/state/v3/d1/miniflare-D1DatabaseObject');
-  if (!fs.existsSync(baseDir)) return null;
-  
-  const files = fs.readdirSync(baseDir);
-  // Sort by mtime descending and exclude metadata.sqlite
-  const dbFiles = files
-    .filter(f => f.endsWith('.sqlite') && !f.includes('metadata.sqlite'))
-    .map(f => {
-      const fullPath = path.join(baseDir, f);
-      return { name: fullPath, time: fs.statSync(fullPath).mtime.getTime() };
-    })
-    .sort((a, b) => b.time - a.time);
-    
-  return dbFiles.length > 0 ? dbFiles[0].name : null;
-}
 
 let db: any;
 
@@ -28,6 +7,27 @@ export function getDb() {
   if (db) return db;
 
   if (process.env.NODE_ENV === 'development') {
+    const Database = require('better-sqlite3');
+    const { drizzle } = require('drizzle-orm/better-sqlite3');
+    const path = require('path');
+    const fs = require('fs');
+
+    function getLocalDbPath() {
+      const baseDir = path.resolve(process.cwd(), '.wrangler/state/v3/d1/miniflare-D1DatabaseObject');
+      if (!fs.existsSync(baseDir)) return null;
+      
+      const files = fs.readdirSync(baseDir);
+      const dbFiles = files
+        .filter(f => f.endsWith('.sqlite') && !f.includes('metadata.sqlite'))
+        .map(f => {
+          const fullPath = path.join(baseDir, f);
+          return { name: fullPath, time: fs.statSync(fullPath).mtime.getTime() };
+        })
+        .sort((a, b) => b.time - a.time);
+        
+      return dbFiles.length > 0 ? dbFiles[0].name : null;
+    }
+
     const dbPath = getLocalDbPath();
     console.log('Using local DB path:', dbPath);
     if (!dbPath) throw new Error('No local D1 database found. Run migrations.');
