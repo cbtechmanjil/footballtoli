@@ -1,3 +1,5 @@
+'use client';
+
 import { CheckCircle2, XCircle, Clock, Upload, Image as ImageIcon } from 'lucide-react';
 import formatNPR from '@/lib/utils';
 import { useState } from 'react';
