@@ -18,12 +18,12 @@ export function getDb() {
       
       const files = fs.readdirSync(baseDir);
       const dbFiles = files
-        .filter(f => f.endsWith('.sqlite') && !f.includes('metadata.sqlite'))
-        .map(f => {
+        .filter((f: any) => f.endsWith('.sqlite') && !f.includes('metadata.sqlite'))
+        .map((f: any) => {
           const fullPath = path.join(baseDir, f);
           return { name: fullPath, time: fs.statSync(fullPath).mtime.getTime() };
         })
-        .sort((a, b) => b.time - a.time);
+        .sort((a: any, b: any) => b.time - a.time);
         
       return dbFiles.length > 0 ? dbFiles[0].name : null;
     }

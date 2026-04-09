@@ -28,7 +28,7 @@ export default async function PricingPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
-            {currentPrices.map((price) => (
+            {currentPrices.map((price: any) => (
               <tr key={price.id} className="hover:bg-gray-50/50 transition-colors">
                 <td className="px-6 py-4">
                   <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-fpl-purple/10 text-fpl-purple font-black text-xs">

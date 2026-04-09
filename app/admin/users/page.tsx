@@ -23,7 +23,7 @@ export default async function UserManagementPage() {
           <div>
             <h2 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-6">Active Accounts</h2>
             <div className="space-y-3">
-              {allUsers.map((user) => (
+              {allUsers.map((user: any) => (
                 <div key={user.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100">
                   <div>
                     <div className="text-sm font-bold text-gray-900">{user.name}</div>
@@ -41,7 +41,7 @@ export default async function UserManagementPage() {
 
           <div>
             <h2 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-6">Create New Player Login</h2>
-            <CreateUserForm players={playersWithoutAcc.map(p => p.players)} />
+            <CreateUserForm players={playersWithoutAcc.map((p: any) => p.players)} />
           </div>
         </div>
       </div>

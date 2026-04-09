@@ -8,7 +8,7 @@ import { eq } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 
 export const authConfig: NextAuthConfig = {
-  adapter: DrizzleAdapter(getDb()),
+  adapter: DrizzleAdapter(getDb()) as any,
   providers: [
     Credentials({
       async authorize(credentials) {

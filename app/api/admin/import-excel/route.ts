@@ -20,7 +20,7 @@ export async function POST(request: Request) {
 
     const buffer = await file.arrayBuffer();
     const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.load(Buffer.from(buffer));
+    await workbook.xlsx.load(buffer as ArrayBuffer);
     const worksheet = workbook.worksheets[0];
 
     const db = getDb();

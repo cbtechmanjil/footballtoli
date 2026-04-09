@@ -1,47 +1,56 @@
 import { getDb } from './index';
-import { players, gameweeks, fines } from './schema';
+import { players, gameweeks, entries, seasons } from './schema';
 
 async function seed() {
   const db = getDb();
 
   console.log('Seeding data...');
+  
+  const season1 = await db.insert(seasons).values({
+    name: 'Test Season',
+    status: 'active',
+  }).returning().get();
 
   // Add players
   const player1 = await db.insert(players).values({
     name: 'Manjil',
-    teamName: 'Manjil Magic',
+    fantasyName: 'Manjil Magic',
   }).returning().get();
 
   const player2 = await db.insert(players).values({
     name: 'John',
-    teamName: 'John Jesters',
+    fantasyName: 'John Jesters',
   }).returning().get();
 
   // Add gameweeks
   const gw1 = await db.insert(gameweeks).values({
     number: 1,
+    seasonId: season1.id,
     status: 'completed',
   }).returning().get();
 
   const gw2 = await db.insert(gameweeks).values({
     number: 2,
+    seasonId: season1.id,
     status: 'active',
   }).returning().get();
 
-  // Add fines
-  await db.insert(fines).values({
+  // Add entries
+  await db.insert(entries).values({
     playerId: player1.id,
     gameweekId: gw1.id,
-    amount: 100,
-    reason: 'Missing Deadline',
+    amountDue: 100,
+    points: 60,
+    rank: 2,
     status: 'paid',
   });
 
-  await db.insert(fines).values({
+  await db.insert(entries).values({
     playerId: player2.id,
     gameweekId: gw1.id,
-    amount: 50,
-    reason: 'Bench Points > 20',
+    amountDue: 50,
+    points: 70,
+    rank: 1,
     status: 'unpaid',
   });
 
