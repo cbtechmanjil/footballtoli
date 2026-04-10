@@ -11,6 +11,15 @@ async function seed() {
     status: 'active',
   }).returning().get();
 
+  // Add default admin
+  await db.insert(users).values({
+    id: 'admin-001',
+    name: 'System Admin',
+    email: 'admin@footballtoli.com',
+    password: '$2a$10$vO.6bX0M6X3f8bX3f/8bX.vO.6bX0M6X3f8bX3f/8bX.vO.6bX0M6X',
+    role: 'admin',
+  }).onConflictDoNothing().run();
+
   // Add players
   const player1 = await db.insert(players).values({
     name: 'Manjil',
